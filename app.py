@@ -11,18 +11,16 @@ def home():
 
 @app.route("/data/<input>")
 def results(input):
+    input = input.capitalize()
     try:
         conn = psycopg2.connect(dbname ="nutrition_facts", user="postgres", password="Nikita87")
         cur = conn.cursor()
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        result = cur.execute(f"SELECT name FROM food_facts ;")
-        return result
+        cur.execute(f"SELECT name FROM food_facts \
+                    WHERE NAME LIKE '{input}%'; ")
     except(e):
-        print(e)
-        return e
-
-    #conn.close(
-    #return render_template("results.html", results=result)
+        return(e)
+    return render_template("results.html", results=cur.fetchall())
 
 if __name__ == "__main__":
     app.run(debug=True)
